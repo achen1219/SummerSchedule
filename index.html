@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kids Daily Task Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Kids Daily Task Tracker</h1>
+    <div>
+      <label for="user-select">Select User:</label>
+      <select id="user-select"></select>
+      <button id="parent-summary-btn">Parent Summary</button>
+    </div>
+
+    <div id="main">
+      <div id="today">
+        <h2 id="date"></h2>
+        <ul id="task-list"></ul>
+        <button id="save-btn">Save for Today</button>
+      </div>
+      <hr>
+      <div id="calendar">
+        <h2>Calendar View</h2>
+        <div id="calendar-grid"></div>
+      </div>
+    </div>
+
+    <div id="parent-summary" style="display:none;">
+      <h2>Parent Summary</h2>
+      <div id="parent-summary-table"></div>
+      <button id="close-summary-btn">Back</button>
+    </div>
+  </div>
+  <script src="schedules.js"></script>
+  <script src="tasks.js"></script>
+</body>
+</html>
