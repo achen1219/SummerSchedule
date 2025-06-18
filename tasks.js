@@ -10,8 +10,8 @@ function getCurrentUser() {
 }
 
 function getTaskTableColor(user) {
-  if (user === "valerie") return "#ffe0f0"; // Light pink
-  if (user === "olivia") return "#e0edff";  // Light blue
+  if (user === "valerie") return "#f3e8ff"; // Light purple
+  if (user === "olivia") return "#ffe0f0";  // Light pink
   return "#f9f9f9";
 }
 
