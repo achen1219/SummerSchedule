@@ -4,7 +4,7 @@ body {
   margin: 0;
 }
 .container {
-  max-width: 600px;
+  max-width: 650px;
   margin: 2em auto;
   background: #fff;
   padding: 2em;
@@ -12,12 +12,27 @@ body {
   box-shadow: 0 2px 12px #ccc;
 }
 #task-list {
-  list-style: none;
-  padding: 0;
+  margin-top: 1em;
 }
-#task-list li {
-  margin-bottom: 0.5em;
-  font-size: 1.1em;
+.task-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 1em;
+  background: inherit;
+}
+.task-table th, .task-table td {
+  border: 1px solid #bbb;
+  padding: 0.4em 0.7em;
+  text-align: left;
+  font-size: 1.05em;
+}
+.task-table th {
+  background: #f0f0f0;
+  font-weight: 700;
+}
+.task-table input[type=checkbox] {
+  width: 1.2em;
+  height: 1.2em;
 }
 #calendar-grid {
   display: grid;
@@ -56,9 +71,3 @@ table {
 th, td {
   border: 1px solid #bbb;
   padding: 0.6em;
-  text-align: center;
-  font-size: 1em;
-}
-th {
-  background: #eee;
-}
