@@ -5,13 +5,9 @@ function getTodayKey() {
   return today.toISOString().slice(0,10);
 }
 
-function getCurrentUser() {
-  return document.getElementById("user-select").value;
-}
-
 function getTaskTableColor(user) {
-  if (user === "valerie") return "#f3e8ff"; // Light purple
-  if (user === "olivia") return "#ffe0f0";  // Light pink
+  if (user === "valerie") return "#ffe0f0"; // Light pink
+  if (user === "olivia") return "#f3e8ff";  // Light purple
   return "#f9f9f9";
 }
 
@@ -19,17 +15,14 @@ function getTaskTableColor(user) {
 async function loadProgress(user, date) {
   const url = `${SHEETDB_API}/search?user=${user}&date=${date}`;
   const response = await fetch(url);
-  return await response.json(); // array of rows (if any)
+  return await response.json();
 }
 
 async function saveProgress(user, date, checklist) {
-  // First, remove old rows for this user/date
-  // (SheetDB only supports DELETE by id, so we get the old rows and delete them by row id)
   const oldRows = await loadProgress(user, date);
   for (let row of oldRows) {
     await fetch(`${SHEETDB_API}/id/${row.id}`, { method: "DELETE" });
   }
-  // Add new rows
   const data = checklist.map((item, i) => ({
     date,
     user,
@@ -45,58 +38,52 @@ async function saveProgress(user, date, checklist) {
   });
 }
 
-// ======= Checklist for Today =======
-async function renderToday() {
-  const user = getCurrentUser();
+async function renderUserToday(user) {
   const tasks = SCHEDULES[user];
-  const dateEl = document.getElementById("date");
-  const taskList = document.getElementById("task-list");
+  const dateEl = document.getElementById(user + "-date");
+  const taskList = document.getElementById(user + "-task-list");
   const todayKey = getTodayKey();
   let progressRows = await loadProgress(user, todayKey);
 
-  // Build the status array (default: all false)
   let todayProgress = Array(tasks.length).fill(false);
   progressRows.forEach(row => {
     if (row.done === "TRUE" || row.done === "true") todayProgress[parseInt(row.index)] = true;
   });
 
-  dateEl.textContent = todayKey + " (" + capitalize(user) + ")";
+  dateEl.textContent = capitalize(user) + " — " + todayKey;
 
-  // Build the task table
   let html = `<table class="task-table" style="background:${getTaskTableColor(user)}"><tr><th>Time</th><th>Task</th><th>Done?</th></tr>`;
   tasks.forEach((item, i) => {
     html += `<tr>
       <td>${item.time}</td>
       <td>${item.task}</td>
-      <td style="text-align:center;"><input type="checkbox" id="task${i}" ${todayProgress[i] ? "checked" : ""}></td>
+      <td style="text-align:center;"><input type="checkbox" class="check-${user}" data-idx="${i}" ${todayProgress[i] ? "checked" : ""}></td>
     </tr>`;
   });
   html += "</table>";
   taskList.innerHTML = html;
 }
 
-async function saveToday() {
-  const user = getCurrentUser();
+async function saveUserToday(user) {
   const tasks = SCHEDULES[user];
   const todayKey = getTodayKey();
-  const checkboxes = document.querySelectorAll("#task-list input[type=checkbox]");
+  const checkboxes = document.querySelectorAll(`.check-${user}`);
   const checklist = tasks.map((task, i) => ({
     ...task,
     done: checkboxes[i].checked
   }));
   await saveProgress(user, todayKey, checklist);
-  alert("Saved!");
-  renderCalendar(); // update calendar after save
+  alert("Saved for " + capitalize(user) + "!");
+  renderUserToday(user); // refresh their table
+  renderUserCalendar(user);
 }
 
 // ======= Calendar =======
-async function renderCalendar() {
-  const grid = document.getElementById("calendar-grid");
+async function renderUserCalendar(user) {
+  const grid = document.getElementById(`${user}-calendar-grid`);
   grid.innerHTML = "";
-  const user = getCurrentUser();
   const tasks = SCHEDULES[user];
   const days = 30;
-  // We'll need to fetch progress for each day
   let promises = [];
   for (let i = days-1; i >= 0; i--) {
     const d = new Date();
@@ -114,7 +101,6 @@ async function renderCalendar() {
     dayDiv.textContent = key.slice(5); // MM-DD
     const progressRows = results[i];
     if (progressRows && progressRows.length > 0) {
-      // Check if all tasks are done
       let doneCount = 0;
       for (let row of progressRows) if (row.done === "TRUE" || row.done === "true") doneCount++;
       const done = (doneCount === tasks.length);
@@ -128,7 +114,7 @@ async function renderCalendar() {
   }
 }
 
-// ======= Parent Summary =======
+// ======= Parent Summary (unchanged) =======
 async function renderParentSummary() {
   const days = 30;
   let html = '<table border="1" cellpadding="5"><tr><th>Date</th>';
@@ -144,7 +130,6 @@ async function renderParentSummary() {
     const key = d.toISOString().slice(0,10);
     dateList.push(key);
   }
-  // Fetch all data up front for all users and days
   let allResults = {};
   for (let user of USERS) {
     allResults[user] = [];
@@ -152,7 +137,6 @@ async function renderParentSummary() {
       allResults[user].push(loadProgress(user, key));
     }
   }
-  // Wait for all
   for (let user of USERS) {
     allResults[user] = await Promise.all(allResults[user]);
   }
@@ -179,12 +163,17 @@ async function renderParentSummary() {
 }
 
 // ======= Event Listeners & Initialization =======
+document.body.addEventListener('click', async function(e) {
+  if (e.target.classList.contains('save-btn')) {
+    const user = e.target.getAttribute('data-user');
+    e.target.disabled = true;
+    e.target.textContent = "Saving...";
+    await saveUserToday(user);
+    e.target.textContent = "Save for " + capitalize(user);
+    e.target.disabled = false;
+  }
+});
 
-document.getElementById("user-select").onchange = function() {
-  renderToday();
-  renderCalendar();
-};
-document.getElementById("save-btn").onclick = saveToday;
 document.getElementById("parent-summary-btn").onclick = function() {
   document.getElementById("main").style.display = "none";
   document.getElementById("parent-summary").style.display = "block";
@@ -195,10 +184,9 @@ document.getElementById("close-summary-btn").onclick = function() {
   document.getElementById("parent-summary").style.display = "none";
 };
 
-window.onload = function() {
-  // Fill dropdown with users
-  const sel = document.getElementById("user-select");
-  sel.innerHTML = USERS.map(user => `<option value="${user}">${capitalize(user)}</option>`).join('');
-  renderToday();
-  renderCalendar();
+window.onload = async function() {
+  await renderUserToday("olivia");
+  await renderUserToday("valerie");
+  await renderUserCalendar("olivia");
+  await renderUserCalendar("valerie");
 };
