@@ -18,21 +18,20 @@ const SCHEDULES = {
     { time: "4:30PM - 5PM", task: "Make up work" }
   ],
   olivia: [
-    { time: "8:30AM - 9AM", task: "Breakfast" },
-    { time: "9AM - 9:30AM", task: "Reading" },
-    { time: "9:30AM - 10AM", task: "Math Practice" },
-    { time: "10AM - 10:30AM", task: "Creative Writing" },
-    { time: "10:30AM - 11AM", task: "Break" },
-    { time: "11AM - 11:45AM", task: "Chinese HW" },
-    { time: "11:45AM - 12:15PM", task: "Science Exploration" },
-    { time: "12:15PM - 12:45PM", task: "Lunch" },
-    { time: "12:45PM - 1:30PM", task: "Art Project" },
-    { time: "1:30PM - 2PM", task: "Break" },
-    { time: "2PM - 2:30PM", task: "English Practice" },
-    { time: "2:30PM - 3PM", task: "Piano" },
-    { time: "3PM - 3:15PM", task: "Snack/Break" },
-    { time: "3:15PM - 4PM", task: "Outdoor Play" },
-    { time: "4PM - 4:30PM", task: "Board Games" }
+    { time: "7:30AM - 8AM", task: "Breakfast" },
+    { time: "8AM - 10:00AM", task: "Geometry" },
+    { time: "10AM - 10:15AM", task: "Break" },
+    { time: "10:15AM - 11:15AM", task: "Piano" },
+    { time: "11:15AM - 12AM", task: "Presentation Preparation and Daily Chinese Review" },
+    { time: "12PM - 12:45PM", task: "Lunch" },
+    { time: "12:45PM - 1:45PM", task: "Piano" },
+    { time: "1:45PM - 2PM", task: "Break" },
+    { time: "2PM - 2:30PM", task: "Read" },
+    { time: "2:30PM - 3:30PM", task: "Geometry HW" },
+    { time: "3:30PM - 4PM", task: "Passion Project/AI" },
+    { time: "4PM - 4:30PM", task: "Exercise" },
+    { time: "4:30PM - 5PM", task: "Flue" },
+    { time: "5PM - 5:45PM", task: "Debate" }
   ]
 };
 
