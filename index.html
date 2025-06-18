@@ -8,25 +8,33 @@
 <body>
   <div class="container">
     <h1>Kids Daily Task Tracker</h1>
-    <div>
-      <label for="user-select">Select User:</label>
-      <select id="user-select"></select>
-      <button id="parent-summary-btn">Parent Summary</button>
-    </div>
-
-    <div id="main">
-      <div id="today">
-        <h2 id="date"></h2>
-        <div id="task-list"></div>
-        <button id="save-btn">Save for Today</button>
+    <div class="side-by-side">
+      <div class="user-section" id="olivia-section">
+        <h2 id="olivia-date"></h2>
+        <div id="olivia-task-list"></div>
+        <button class="save-btn" data-user="olivia">Save for Olivia</button>
       </div>
-      <hr>
-      <div id="calendar">
-        <h2>Calendar View</h2>
-        <div id="calendar-grid"></div>
+      <div class="user-section" id="valerie-section">
+        <h2 id="valerie-date"></h2>
+        <div id="valerie-task-list"></div>
+        <button class="save-btn" data-user="valerie">Save for Valerie</button>
       </div>
     </div>
-
+    <hr>
+    <button id="parent-summary-btn">Parent Summary</button>
+    <div id="calendar">
+      <h2>Calendar View</h2>
+      <div class="side-by-side">
+        <div style="width:50%;">
+          <h3>Olivia</h3>
+          <div id="olivia-calendar-grid"></div>
+        </div>
+        <div style="width:50%;">
+          <h3>Valerie</h3>
+          <div id="valerie-calendar-grid"></div>
+        </div>
+      </div>
+    </div>
     <div id="parent-summary" style="display:none;">
       <h2>Parent Summary</h2>
       <div id="parent-summary-table"></div>
