@@ -4,12 +4,22 @@ body {
   margin: 0;
 }
 .container {
-  max-width: 650px;
+  max-width: 950px;
   margin: 2em auto;
   background: #fff;
   padding: 2em;
   border-radius: 1em;
   box-shadow: 0 2px 12px #ccc;
+}
+.side-by-side {
+  display: flex;
+  flex-direction: row;
+  gap: 2em;
+  justify-content: space-between;
+}
+.user-section {
+  flex: 1 1 0px;
+  min-width: 310px;
 }
 #task-list {
   margin-top: 1em;
@@ -34,7 +44,7 @@ body {
   width: 1.2em;
   height: 1.2em;
 }
-#calendar-grid {
+#calendar-grid, #olivia-calendar-grid, #valerie-calendar-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0.5em;
@@ -46,7 +56,7 @@ body {
   text-align: center;
   font-size: 0.95em;
 }
-#save-btn,
+.save-btn,
 #parent-summary-btn,
 #close-summary-btn {
   margin-top: 1em;
@@ -58,7 +68,7 @@ body {
   font-size: 1.1em;
   cursor: pointer;
 }
-#save-btn:hover,
+.save-btn:hover,
 #parent-summary-btn:hover,
 #close-summary-btn:hover {
   background: #388e3c;
@@ -71,3 +81,18 @@ table {
 th, td {
   border: 1px solid #bbb;
   padding: 0.6em;
+  text-align: center;
+  font-size: 1em;
+}
+th {
+  background: #eee;
+}
+@media (max-width: 900px) {
+  .side-by-side {
+    flex-direction: column;
+    gap: 1em;
+  }
+  .user-section {
+    min-width: unset;
+  }
+}
