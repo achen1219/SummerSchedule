@@ -1,5 +1,12 @@
 const SHEETDB_API = 'https://sheetdb.io/api/v1/27o8ed5ayvouj';
 
+// Set up your date range here!
+const CALENDAR_START = "2025-06-15";
+const CALENDAR_END   = "2025-08-16";
+
+// Start with today as default, but allow user to change
+let selectedDate = getTodayKey();
+
 function getTodayKey() {
   const today = new Date();
   return today.toISOString().slice(0,10);
@@ -42,15 +49,14 @@ async function renderUserToday(user) {
   const tasks = SCHEDULES[user];
   const dateEl = document.getElementById(user + "-date");
   const taskList = document.getElementById(user + "-task-list");
-  const todayKey = getTodayKey();
-  let progressRows = await loadProgress(user, todayKey);
+  let progressRows = await loadProgress(user, selectedDate);
 
   let todayProgress = Array(tasks.length).fill(false);
   progressRows.forEach(row => {
     if (row.done === "TRUE" || row.done === "true") todayProgress[parseInt(row.index)] = true;
   });
 
-  dateEl.textContent = capitalize(user) + " — " + todayKey;
+  dateEl.textContent = capitalize(user) + " — " + selectedDate;
 
   let html = `<table class="task-table" style="background:${getTaskTableColor(user)}"><tr><th>Time</th><th>Task</th><th>Done?</th></tr>`;
   tasks.forEach((item, i) => {
@@ -66,127 +72,16 @@ async function renderUserToday(user) {
 
 async function saveUserToday(user) {
   const tasks = SCHEDULES[user];
-  const todayKey = getTodayKey();
   const checkboxes = document.querySelectorAll(`.check-${user}`);
   const checklist = tasks.map((task, i) => ({
     ...task,
     done: checkboxes[i].checked
   }));
-  await saveProgress(user, todayKey, checklist);
+  await saveProgress(user, selectedDate, checklist);
   alert("Saved for " + capitalize(user) + "!");
-  renderUserToday(user); // refresh their table
-  renderUserCalendar(user);
+  await renderUserToday(user); // refresh table for this user
+  await renderParentSummary(); // update summary table
 }
 
-// ======= Calendar =======
-async function renderUserCalendar(user) {
-  const grid = document.getElementById(`${user}-calendar-grid`);
-  grid.innerHTML = "";
-  const tasks = SCHEDULES[user];
-  const days = 30;
-  let promises = [];
-  for (let i = days-1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0,10);
-    promises.push(loadProgress(user, key));
-  }
-  let results = await Promise.all(promises);
-  for (let i = 0; i < days; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - (days-1-i));
-    const key = d.toISOString().slice(0,10);
-    const dayDiv = document.createElement("div");
-    dayDiv.className = "calendar-day";
-    dayDiv.textContent = key.slice(5); // MM-DD
-    const progressRows = results[i];
-    if (progressRows && progressRows.length > 0) {
-      let doneCount = 0;
-      for (let row of progressRows) if (row.done === "TRUE" || row.done === "true") doneCount++;
-      const done = (doneCount === tasks.length);
-      dayDiv.style.background = done ? "#c4f0c4" : "#ffc6c6";
-      dayDiv.title = done ? "All tasks completed" : "Not all tasks done";
-    } else {
-      dayDiv.style.background = "#eee";
-      dayDiv.title = "No data";
-    }
-    grid.appendChild(dayDiv);
-  }
-}
-
-// ======= Parent Summary (unchanged) =======
-async function renderParentSummary() {
-  const days = 30;
-  let html = '<table border="1" cellpadding="5"><tr><th>Date</th>';
-  USERS.forEach(user => {
-    html += `<th>${capitalize(user)}</th>`;
-  });
-  html += '</tr>';
-
-  let dateList = [];
-  for (let i = days-1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0,10);
-    dateList.push(key);
-  }
-  let allResults = {};
-  for (let user of USERS) {
-    allResults[user] = [];
-    for (let key of dateList) {
-      allResults[user].push(loadProgress(user, key));
-    }
-  }
-  for (let user of USERS) {
-    allResults[user] = await Promise.all(allResults[user]);
-  }
-
-  for (let i = 0; i < days; i++) {
-    const key = dateList[i];
-    html += `<tr><td>${key}</td>`;
-    USERS.forEach(user => {
-      const tasks = SCHEDULES[user];
-      const progressRows = allResults[user][i];
-      if (progressRows && progressRows.length > 0) {
-        let doneCount = 0;
-        for (let row of progressRows) if (row.done === "TRUE" || row.done === "true") doneCount++;
-        const done = (doneCount === tasks.length);
-        html += `<td style="background:${done?'#c4f0c4':'#ffc6c6'};text-align:center;">${done?'✅':'❌'}</td>`;
-      } else {
-        html += `<td style="background:#eee;text-align:center;">—</td>`;
-      }
-    });
-    html += '</tr>';
-  }
-  html += '</table>';
-  document.getElementById("parent-summary-table").innerHTML = html;
-}
-
-// ======= Event Listeners & Initialization =======
-document.body.addEventListener('click', async function(e) {
-  if (e.target.classList.contains('save-btn')) {
-    const user = e.target.getAttribute('data-user');
-    e.target.disabled = true;
-    e.target.textContent = "Saving...";
-    await saveUserToday(user);
-    e.target.textContent = "Save for " + capitalize(user);
-    e.target.disabled = false;
-  }
-});
-
-document.getElementById("parent-summary-btn").onclick = function() {
-  document.getElementById("main").style.display = "none";
-  document.getElementById("parent-summary").style.display = "block";
-  renderParentSummary();
-};
-document.getElementById("close-summary-btn").onclick = function() {
-  document.getElementById("main").style.display = "block";
-  document.getElementById("parent-summary").style.display = "none";
-};
-
-window.onload = async function() {
-  await renderUserToday("olivia");
-  await renderUserToday("valerie");
-  await renderUserCalendar("olivia");
-  await renderUserCalendar("valerie");
-};
+function daysBetween(d1, d2) {
+  return Math.round
