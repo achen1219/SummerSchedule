@@ -1,10 +1,8 @@
 const SHEETDB_API = 'https://sheetdb.io/api/v1/27o8ed5ayvouj';
 
-// Set up your date range here!
 const CALENDAR_START = "2025-06-15";
 const CALENDAR_END   = "2025-08-16";
 
-// Start with today as default, but allow user to change
 let selectedDate = getTodayKey();
 
 function getTodayKey() {
@@ -13,12 +11,11 @@ function getTodayKey() {
 }
 
 function getTaskTableColor(user) {
-  if (user === "valerie") return "#ffe0f0"; // Light pink
-  if (user === "olivia") return "#f3e8ff";  // Light purple
+  if (user === "valerie") return "#ffe0f0";
+  if (user === "olivia") return "#f3e8ff";
   return "#f9f9f9";
 }
 
-// ======= Google Sheets Cloud Sync =======
 async function loadProgress(user, date) {
   const url = `${SHEETDB_API}/search?user=${user}&date=${date}`;
   const response = await fetch(url);
@@ -49,7 +46,6 @@ async function renderUserToday(user) {
   const tasks = SCHEDULES[user];
   const dateEl = document.getElementById(user + "-date");
   const taskList = document.getElementById(user + "-task-list");
-  // Show loading while waiting
   dateEl.textContent = capitalize(user) + " — " + selectedDate;
   taskList.innerHTML = "<div class='loading'>Loading...</div>";
 
@@ -79,17 +75,15 @@ async function saveUserToday(user) {
     ...task,
     done: checkboxes[i].checked
   }));
-  // Show "Saving..." feedback
   const btn = document.querySelector(`.save-btn[data-user="${user}"]`);
   btn.disabled = true;
   btn.textContent = "Saving...";
   await saveProgress(user, selectedDate, checklist);
   btn.textContent = "Save for " + capitalize(user);
   btn.disabled = false;
-  await renderUserToday(user); // refresh table for this user
+  await renderUserToday(user);
 }
 
-// ======= Calendar Logic =======
 function daysBetween(d1, d2) {
   return Math.round((d2 - d1) / (1000*60*60*24));
 }
@@ -121,7 +115,7 @@ async function renderMainCalendar() {
     }
     const btn = document.createElement("button");
     btn.className = "calendar-btn";
-    btn.textContent = thisDate.slice(5); // MM-DD
+    btn.textContent = thisDate.slice(5);
     if (thisDate === selectedDate) btn.classList.add("selected");
     if (isToday(thisDate)) btn.classList.add("today");
     btn.onclick = async function() {
@@ -134,7 +128,6 @@ async function renderMainCalendar() {
   }
 }
 
-// ======= Parent Summary =======
 async function renderParentSummary() {
   const parentDiv = document.getElementById("parent-summary");
   parentDiv.style.display = "block";
@@ -184,7 +177,6 @@ async function renderParentSummary() {
   tableDiv.innerHTML = html;
 }
 
-// ======= Event Listeners & Initialization =======
 document.body.addEventListener('click', async function(e) {
   if (e.target.classList.contains('save-btn')) {
     const user = e.target.getAttribute('data-user');
