@@ -4,7 +4,7 @@ body {
   margin: 0;
 }
 .container {
-  max-width: 950px;
+  max-width: 1000px;
   margin: 2em auto;
   background: #fff;
   padding: 2em;
@@ -19,10 +19,7 @@ body {
 }
 .user-section {
   flex: 1 1 0px;
-  min-width: 310px;
-}
-#task-list {
-  margin-top: 1em;
+  min-width: 320px;
 }
 .task-table {
   border-collapse: collapse;
@@ -44,21 +41,7 @@ body {
   width: 1.2em;
   height: 1.2em;
 }
-#calendar-grid, #olivia-calendar-grid, #valerie-calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.5em;
-  margin-bottom: 1em;
-}
-.calendar-day {
-  padding: 0.6em;
-  border-radius: 6px;
-  text-align: center;
-  font-size: 0.95em;
-}
-.save-btn,
-#parent-summary-btn,
-#close-summary-btn {
+.save-btn {
   margin-top: 1em;
   padding: 0.7em 2em;
   border: none;
@@ -68,10 +51,35 @@ body {
   font-size: 1.1em;
   cursor: pointer;
 }
-.save-btn:hover,
-#parent-summary-btn:hover,
-#close-summary-btn:hover {
+.save-btn:hover {
   background: #388e3c;
+}
+.calendar-row {
+  display: flex;
+  margin-bottom: 0.3em;
+}
+.calendar-btn {
+  flex: 1 1 0;
+  margin-right: 0.2em;
+  padding: 0.5em 0.6em;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  background: #fafafa;
+  cursor: pointer;
+  font-size: 1em;
+  min-width: 55px;
+}
+.calendar-btn.selected {
+  background: #d1eaff;
+  font-weight: bold;
+  border: 2px solid #6ab7ff;
+}
+.calendar-btn.today {
+  border: 2px solid #81c784;
+}
+#parent-summary-table {
+  margin-top: 2em;
+  overflow-x: auto;
 }
 table {
   border-collapse: collapse;
@@ -94,5 +102,13 @@ th {
   }
   .user-section {
     min-width: unset;
+  }
+  .calendar-row {
+    flex-direction: column;
+    gap: 0.1em;
+  }
+  .calendar-btn {
+    min-width: 100%;
+    margin-bottom: 0.1em;
   }
 }
