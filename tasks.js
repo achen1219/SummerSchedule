@@ -13,8 +13,8 @@ function getTodayKey() {
 }
 
 function getTaskTableColor(user) {
-  if (user === "valerie") return "#ffe0f0"; // Light pink
-  if (user === "olivia") return "#f3e8ff";  // Light purple
+  if (user === "olivia") return "#ffe0f0"; // Light pink
+  if (user === "valerie") return "#f3e8ff";  // Light purple
   return "#f9f9f9";
 }
 
